@@ -1,0 +1,57 @@
+/* books-table.component.scss */
+
+table {
+  width: 100%;
+}
+
+.table-container {
+  max-height: calc(100vh - 23rem); 
+  overflow: auto; 
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 4px;
+}
+
+
+/* Opcional: margem para o paginador não ficar colado */
+mat-paginator {
+    border-top: 1px solid rgba(0,0,0,0.12);
+}
+
+/* Ajustes visuais do Chip para ser pequeno */
+::ng-deep .mat-mdc-chip {
+  min-height: 24px !important;
+  font-size: 12px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+
+/* 1. DISPONÍVEL (Verde) */
+::ng-deep .available {
+  /* No Material 3/MDC, mudamos estas variáveis para controlar as cores */
+  --mdc-chip-elevated-container-color: #e8f5e9; /* Fundo Verde Claro */
+  --mdc-chip-label-text-color: #000000;       /* Texto Verde Escuro */
+}
+
+/* 2. INDISPONÍVEL (Vermelho) */
+::ng-deep .unavailable {
+  --mdc-chip-elevated-container-color: #d1485d; /* Fundo Vermelho Claro */
+  --mdc-chip-label-text-color: #ffffff;       /* Texto Vermelho Escuro */
+}
+
+/* --- MODO ESCURO  --- */
+
+/* O :host-context verifica se algum pai (neste caso o body) tem a classe .dark-theme */
+:host-context(.dark-theme) {
+
+  /* Sobrescreve as variáveis para o modo escuro */
+  ::ng-deep .available {
+    --mdc-chip-elevated-container-color: #70eb7b; /* Fundo Verde Escuro */
+    --mdc-chip-label-text-color: #000000;       /* Texto Verde Claro */
+  }
+
+  ::ng-deep .unavailable {
+    --mdc-chip-elevated-container-color: #d1485d; /* Fundo Vermelho Escuro */
+    --mdc-chip-label-text-color: #ffffff;       /* Texto Vermelho Claro */
+  }
+}

@@ -1,0 +1,54 @@
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+
+    @for (col of columns(); track col.key) {
+      
+      <ng-container [matColumnDef]="col.key">
+        
+        <th mat-header-cell *matHeaderCellDef> {{ col.header }} </th>
+
+        <td mat-cell *matCellDef="let book"> 
+          
+          @switch (col.type) {
+            
+            @case ('text') {
+              {{ book[col.key] }}
+            }
+
+            @case ('status') {
+              <mat-chip [class]="book.available_copies > 0 ? 'available' : 'unavailable'">
+                {{ book.available_copies > 0 ? 'available' : 'unavailable' }}
+              </mat-chip>
+            }
+
+            @case ('actions') {
+              <button mat-icon-button color="primary" (click)="onEditBook(book)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="onDeleteBook(book.id, book.title)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+
+          }
+        </td>
+      </ng-container>
+
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+  </table>
+</div>
+
+<!-- Usa os inputs para definir página inicial -->
+<mat-paginator 
+    [length]="totalItems()" 
+    [pageSize]="pageSize()"
+    [pageIndex]="pageIndex()"
+    [pageSizeOptions]="[5, 10, 25]"
+    (page)="onPageChange($event)" 
+    showFirstLastButtons
+    aria-label="Select page of books">
+</mat-paginator>

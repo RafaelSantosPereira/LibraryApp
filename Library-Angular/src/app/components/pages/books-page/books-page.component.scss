@@ -1,0 +1,51 @@
+.page-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+}
+
+.page-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  
+  .toolbar-title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+}
+
+.filters-card {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.search-field {
+  flex: 0 0 auto; // Não cresce, não encolhe, tamanho automático
+  width: 500px; // Largura fixa para a barra de pesquisa
+  max-width: 500px;
+}
+
+.add-button {
+  margin-left: auto; // Empurra o botão para a direita
+  height: 56px;
+}
+
+mat-card {
+  margin: 0 16px 16px 16px;
+  
+  mat-card-content {
+    padding: 0;
+  }
+}

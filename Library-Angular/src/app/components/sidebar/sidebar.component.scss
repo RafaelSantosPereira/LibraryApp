@@ -1,0 +1,23 @@
+.logo-area {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #3f51b5;
+}
+
+/* Quando o rato passa por cima de um item da lista */
+mat-nav-list a[mat-list-item]:hover {
+
+  background-color: rgba(63, 81, 181, 0.1); 
+  
+  color: #3f51b5; 
+}
+mat-nav-list a[mat-list-item]:focus {
+    background-color: rgba(63, 81, 181, 0.1); 
+  
+    color: #3f51b5; 
+}

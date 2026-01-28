@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Book' : 'Add New Book' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="bookForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Enter book title">
+      <mat-error *ngIf="bookForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+      <mat-error *ngIf="bookForm.get('title')?.hasError('minlength')">
+        Title must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Author</mat-label>
+      <input matInput formControlName="author" placeholder="Enter author name">
+      <mat-error *ngIf="bookForm.get('author')?.hasError('required')">
+        Author is required
+      </mat-error>
+      <mat-error *ngIf="bookForm.get('author')?.hasError('minlength')">
+        Author must be at least 2 characters
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Category</mat-label>
+      <input matInput formControlName="category" placeholder="Enter category">
+      <mat-error *ngIf="bookForm.get('category')?.hasError('required')">
+        Category is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Year</mat-label>
+      <input matInput type="number" formControlName="year" placeholder="Enter publication year">
+      <mat-error *ngIf="bookForm.get('year')?.hasError('required')">
+        Year is required
+      </mat-error>
+      <mat-error *ngIf="bookForm.get('year')?.hasError('min') || bookForm.get('year')?.hasError('max')">
+        Year must be between 1000 and 9999
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Total Copies</mat-label>
+      <input matInput type="number" formControlName="total_copies" placeholder="Number of copies">
+      <mat-hint>Total number of copies in the library</mat-hint>
+      <mat-error *ngIf="bookForm.get('total_copies')?.hasError('required')">
+        Total copies is required
+      </mat-error>
+      <mat-error *ngIf="bookForm.get('total_copies')?.hasError('min')">
+        Must be at least 1
+      </mat-error>
+    </mat-form-field>
+
+
+    @if (isEditMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Available Copies</mat-label>
+        <input matInput type="number" formControlName="available_copies" placeholder="Available copies">
+        <mat-hint>Number of copies currently available</mat-hint>
+        <mat-error *ngIf="bookForm.get('available_copies')?.hasError('required')">
+          Available copies is required
+        </mat-error>
+        <mat-error *ngIf="bookForm.get('available_copies')?.hasError('min')">
+          Cannot be negative
+        </mat-error>
+      </mat-form-field>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!bookForm.valid">
+    {{ isEditMode ? 'Update' : 'Save' }}
+  </button>
+</mat-dialog-actions>

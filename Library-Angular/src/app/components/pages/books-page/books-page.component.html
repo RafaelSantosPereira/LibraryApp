@@ -1,0 +1,43 @@
+<div class="page-container">
+  
+  <mat-toolbar color="primary" class="page-toolbar">
+    <span class="toolbar-title">Books Management</span>
+  </mat-toolbar>
+
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search books</mat-label>
+          <input matInput 
+            placeholder="Title, author, category..." 
+            [(ngModel)]="searchQuery" 
+            (ngModelChange)="onSearchChange($event)">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+        
+        <button mat-raised-button color="accent" (click)="addBook()" class="add-button">
+          <mat-icon>add</mat-icon>
+          Add Book
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabela -->
+  <mat-card>
+    <mat-card-content>
+      <app-books-table 
+        [data]="booksData()" 
+        [columns]="tableConfig()"
+        [totalItems]="totalBooks()"
+        [pageSize]="currentPageSize"
+        [pageIndex]="currentPageIndex - 1"
+        (pageChange)="onPageChange($event)"
+        (deleteBook)="onDeleteBook($event)"
+        (editBook)="onEditBook($event)"> 
+      </app-books-table>
+    </mat-card-content>
+  </mat-card>
+
+</div>
