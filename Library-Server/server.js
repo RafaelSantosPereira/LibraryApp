@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(cors());
@@ -29,6 +31,102 @@ async function checkConnection() {
 }
 
 checkConnection();
+
+
+app.post('/auth/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const [users] = await db.query(
+            `SELECT u.id, u.username, u.role, u.email, a.password_hash 
+             FROM users u
+             JOIN user_auth a ON u.id = a.user_id
+             WHERE u.email = ?`, 
+            [email]
+        );
+
+        if (users.length === 0) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        const user = users[0];
+
+        const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign(
+            { id: user.id, role: user.role, name: user.username }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '8h' }
+        );
+
+        await db.query('UPDATE user_auth SET last_login = NOW() WHERE user_id = ?', [user.id]);
+
+        res.json({
+            message: "Login successful",
+            token: token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role
+            }
+        });
+
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post('/auth/signup', async (req, res) => {
+    const { username, email, password, role } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const connection = await db.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        
+        const [userResult] = await connection.query(
+            'INSERT INTO users (username, email, role) VALUES (?, ?, ?)',
+            [username, email, role]
+        );
+        
+        const newUserId = userResult.insertId;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await connection.query(
+            'INSERT INTO user_auth (user_id, password_hash) VALUES (?, ?)',
+            [newUserId, hashedPassword]
+        );
+
+        await connection.commit();
+        res.status(201).json({ message: "User registered successfully" });
+
+    } catch (err) {
+        await connection.rollback();
+
+        if (err.code === 'ER_DUP_ENTRY') {
+            if (err.message.includes('email')) {
+                return res.status(409).json({ message: "Email already exists" });
+            }
+        }
+
+        console.error("Signup error:", err);
+        res.status(500).json({ error: "Internal Server Error" });
+
+    } finally {
+        connection.release();
+    }
+});
 
 app.get('/books', async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -173,4 +271,6 @@ app.delete('/book/:id', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+
+
 });

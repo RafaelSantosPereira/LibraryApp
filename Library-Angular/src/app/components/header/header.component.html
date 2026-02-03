@@ -1,4 +1,4 @@
-<mat-toolbar color="primary" class="header-toolbar">
+<mat-toolbar color="primary">
   
   <button mat-icon-button (click)="onMenuClick()">
     <mat-icon>menu</mat-icon>
@@ -11,7 +11,6 @@
       </mat-form-field>
   </div>
 
-  <span class="spacer"></span>
 
   <button mat-icon-button (click)="toggleTheme()">
     <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>

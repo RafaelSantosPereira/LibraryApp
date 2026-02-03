@@ -1,0 +1,46 @@
+.signup-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; 
+  padding: 20px; 
+  
+  /*  Garantir que o padding não aumenta a largura total */
+  box-sizing: border-box;
+}
+
+.signup-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  border-radius: 16px;
+  
+  /* Opcional: Para garantir que o cartão não sai para fora em larguras muito pequenas */
+  box-sizing: border-box; 
+}
+
+/* O resto mantém igual */
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+  margin-top: 20px;
+}
+
+.signup-button {
+  margin-top: 16px;
+  padding: 24px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.signup-footer {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+mat-card-title {
+  font-size: 24px !important;
+  font-weight: 500;
+}

@@ -8,6 +8,7 @@ import { BooksService } from '../../services/books.service';
 import { CreateBookDto, UpdateBookDto } from '../../models/book.model';
 import { CommonModule } from '@angular/common';
 
+
 @Component({
   selector: 'app-book-form-dialog',
   standalone: true,
@@ -26,6 +27,8 @@ export class BookFormDialogComponent implements OnInit {
   private fb = inject(FormBuilder);
   private dialogRef = inject(MatDialogRef<BookFormDialogComponent>);
   private booksService = inject(BooksService);
+
+
 
   data = inject(MAT_DIALOG_DATA, { optional: true });
 
@@ -50,6 +53,9 @@ export class BookFormDialogComponent implements OnInit {
     console.log('Modo edição:', this.isEditMode);
     console.log('Dados recebidos:', this.data);
     console.log('Valores do form:', this.bookForm.value);
+
+
+
   }
 
   onSave() {
@@ -77,6 +83,7 @@ export class BookFormDialogComponent implements OnInit {
             console.error('Erro ao atualizar livro:', err);
           }
         });
+              
       } else {
 
         const bookData: CreateBookDto = {

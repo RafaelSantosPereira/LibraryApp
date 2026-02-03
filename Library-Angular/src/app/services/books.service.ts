@@ -14,7 +14,7 @@ interface PaginatedResponse {
 export class BooksService {
 
   private httpClient = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000'; // ✅ Centraliza a URL
+  private apiUrl = 'http://localhost:3000';
   
   currentBooks = signal<Book[]>([]);
   totalBooks = signal<number>(0);
@@ -37,7 +37,7 @@ export class BooksService {
   }
 
   addBook(book: CreateBookDto) {
-    return this.httpClient.post<Book>(`${this.apiUrl}/books`, book).pipe( // ✅ Mudei para /books
+    return this.httpClient.post<Book>(`${this.apiUrl}/books`, book).pipe( 
       tap({
         next: (newBook) => {
           this.currentBooks.update(books => [...books, newBook]);

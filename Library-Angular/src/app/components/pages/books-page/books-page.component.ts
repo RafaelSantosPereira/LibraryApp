@@ -9,6 +9,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookDeleteFormDialogComponent } from '../../book-delete-form-dialog/book-delete-form-dialog.component';
 import { DeleteBookEvent } from '../../books-table/books-table.component';
+import { DestroyRef } from '@angular/core';
 
 // Imports do Angular Material
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -47,6 +48,8 @@ export class BooksPageComponent {
   private booksService = inject(BooksService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
+
 
   @ViewChild(BooksTableComponent) booksTable!: BooksTableComponent;
 
@@ -63,7 +66,7 @@ export class BooksPageComponent {
 
   ngOnInit() {
     // Subscreve às mudanças na URL
-    this.route.queryParams.subscribe(params => {
+    const queryParamsSubscription = this.route.queryParams.subscribe(params => {
       const SearchQuery = params['query'] || '';
       const page = params['page'] ? Number(params['page']) : 1;
       const limit = params['limit'] ? Number(params['limit']) : 10;
@@ -78,6 +81,12 @@ export class BooksPageComponent {
         this.loadBooks(page, limit);
       }
     });
+
+    this.destroyRef.onDestroy(() => {
+      queryParamsSubscription.unsubscribe();
+    });
+
+
   }
 
   loadBooks(page: number, limit: number) {
@@ -154,6 +163,6 @@ export class BooksPageComponent {
       width: '600px'
     });
 
-    }
+  }
 
 }

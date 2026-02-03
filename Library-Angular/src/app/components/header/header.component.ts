@@ -24,6 +24,21 @@ export class HeaderComponent {
   themeToggled = output<boolean>();
   isDarkMode = signal(false);
 
+  theme = localStorage.getItem('theme');
+
+
+
+  ngOnInit(){
+    if(this.theme === 'dark'){
+      this.isDarkMode.set(true);
+    }
+    else{
+      this.isDarkMode.set(false);
+    }
+  }
+
+
+
   onMenuClick() {
     this.menuToggled.emit(); 
   }

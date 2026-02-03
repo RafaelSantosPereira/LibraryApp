@@ -1,37 +1,38 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { HeaderComponent } from './components/header/header.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { DOCUMENT } from '@angular/common';
+
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
   // Aqui importamos os NOSSOS componentes novos
-  imports: [RouterOutlet, MatSidenavModule, HeaderComponent, SidebarComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'BiblioTech';
 
-  // Precisamos do Renderer2 para mexer na tag <body> de forma segura
+  theam = localStorage.getItem('theme');
+  
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2
   ) {}
 
-  onThemeChanged(isDark: boolean) {
-    const hostClass = 'dark-theme';
-    
-    if (isDark) {
-      // Adiciona a classe 'dark-theme' ao body
-      this.renderer.addClass(this.document.body, hostClass);
+  ngOnInit() {
+    const currentTheme = localStorage.getItem('theme');
+    if(!currentTheme){
+      localStorage.setItem('theme', 'light');
+    }
+    if (currentTheme === 'dark') {
+      this.renderer.addClass(this.document.body, 'dark-theme');
     } else {
-      // Remove a classe
-      this.renderer.removeClass(this.document.body, hostClass);
+      this.renderer.removeClass(this.document.body, 'dark-theme');
     }
   }
+
+
 }
