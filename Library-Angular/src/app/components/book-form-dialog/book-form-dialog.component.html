@@ -26,7 +26,14 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Category</mat-label>
-      <input matInput formControlName="category" placeholder="Enter category">
+      <mat-select formControlName="category" placeholder="Select a category">
+        @for (cat of categories; track cat) {
+          <mat-option [value]="cat">
+            {{ cat }}
+          </mat-option>
+        }
+      </mat-select>
+      
       <mat-error *ngIf="bookForm.get('category')?.hasError('required')">
         Category is required
       </mat-error>
@@ -39,7 +46,7 @@
         Year is required
       </mat-error>
       <mat-error *ngIf="bookForm.get('year')?.hasError('min') || bookForm.get('year')?.hasError('max')">
-        Year must be between 1000 and 9999
+        Year must be between 1000 and {{ currentYear }}
       </mat-error>
     </mat-form-field>
 

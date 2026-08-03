@@ -22,7 +22,6 @@ export const routes: Routes = [
       { path: 'readers', 
         loadComponent: () => import('./components/pages/readers-page/readers-page.component').then(m => m.ReadersPageComponent) ,
         
-        canActivate: [adminGuard]
       },
     ]
   },

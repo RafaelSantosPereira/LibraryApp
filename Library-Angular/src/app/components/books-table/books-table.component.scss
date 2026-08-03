@@ -2,6 +2,7 @@
 
 table {
   width: 100%;
+   background-color: var(--mdc-elevated-card-container-color, #fafafa);
 }
 
 .table-container {
@@ -9,12 +10,14 @@ table {
   overflow: auto; 
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 4px;
+
 }
 
 
 /* Opcional: margem para o paginador não ficar colado */
 mat-paginator {
-    border-top: 1px solid rgba(0,0,0,0.12);
+  border-top: 1px solid rgba(0,0,0,0.12);
+  background-color: var(--mdc-elevated-card-container-color, #fafafa);
 }
 
 /* Ajustes visuais do Chip para ser pequeno */

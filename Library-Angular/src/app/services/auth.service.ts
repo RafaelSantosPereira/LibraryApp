@@ -1,52 +1,70 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { tap } from 'rxjs';
+import { tap, catchError, of } from 'rxjs';
 
 export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
+// Cria esta nova interface para o registo
+export interface SignupUser {
   username: string;
   email: string;
   password: string;
   role: string;
 }
 
-export interface loginResponse{
-  message: string;
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    role: string;
-  }
-}
-
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService {
-
   private httpClient = inject(HttpClient);
   private apiUrl = 'http://localhost:3000';
 
-  constructor() { }
+  // 1. Criamos um Signal que guarda o utilizador APENAS na memória RAM
+  currentUser = signal<User | null>(null);
 
-  signup(user: User) {
-    const response = this.httpClient.post<{message: string}>(`${this.apiUrl}/auth/signup`, user);
-    console.log(response)
-
-    return response;
+  signup(user: SignupUser) {
+    return this.httpClient.post<{message: string}>(`${this.apiUrl}/auth/signup`, user);
   }
-  login(email: string, password: string) {
-    const response = this.httpClient.post<loginResponse>(`${this.apiUrl}/auth/login`, {email, password}).pipe(tap({
-      next: (response) => {
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('user_data', JSON.stringify(response.user));
-      },
-    }));
-    console.log(response)
 
-    return response;
+  // 2. O Login agora atualiza o Signal em vez do localStorage
+  login(email: string, password: string) {
+    return this.httpClient.post<{message: string, user: User}>(
+      `${this.apiUrl}/auth/login`, 
+      { email, password },
+      { withCredentials: true }
+    ).pipe(
+      tap(response => {
+        this.currentUser.set(response.user);
+      })
+    );
+  }
+
+  logout() {
+    return this.httpClient.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => {
+        this.currentUser.set(null);
+      })
+    );
+  }
+
+  fetchCurrentUser() {
+    return this.httpClient.get<{user: User}>(`${this.apiUrl}/auth/me`, { withCredentials: true }).pipe(
+      tap(response => {
+        this.currentUser.set(response.user);
+      }),
+      catchError(() => {
+        this.currentUser.set(null);
+        return of(null); 
+      })
+    );
+  }
+  isAdmin() {
+    const user = this.currentUser();
+    return user?.role === 'admin';
   }
 }

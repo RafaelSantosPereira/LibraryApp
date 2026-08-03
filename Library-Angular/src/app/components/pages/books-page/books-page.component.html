@@ -16,10 +16,12 @@
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
         
-        <button mat-raised-button color="accent" (click)="addBook()" class="add-button">
+        @if(isAdmin()){
+          <button mat-raised-button color="accent" (click)="addBook()" class="add-button">
           <mat-icon>add</mat-icon>
           Add Book
         </button>
+        }
       </div>
     </mat-card-content>
   </mat-card>

@@ -37,7 +37,7 @@ export class BooksService {
   }
 
   addBook(book: CreateBookDto) {
-    return this.httpClient.post<Book>(`${this.apiUrl}/books`, book).pipe( 
+    return this.httpClient.post<Book>(`${this.apiUrl}/books`, book, { withCredentials: true }).pipe( 
       tap({
         next: (newBook) => {
           this.currentBooks.update(books => [...books, newBook]);
@@ -51,7 +51,7 @@ export class BooksService {
 
   
   updateBook(bookData: UpdateBookDto) {
-    return this.httpClient.put<Book>(`${this.apiUrl}/book/${bookData.id}`, bookData).pipe(
+    return this.httpClient.put<Book>(`${this.apiUrl}/books/${bookData.id}`, bookData, { withCredentials: true }).pipe(
       tap({
         next: (updatedBook) => {
           this.currentBooks.update(books => 
@@ -66,7 +66,7 @@ export class BooksService {
   }
 
   deleteBook(bookId: number) {
-    return this.httpClient.delete(`${this.apiUrl}/book/${bookId}`).pipe(
+    return this.httpClient.delete(`${this.apiUrl}/books/${bookId}`, { withCredentials: true }).pipe(
       tap({
         next: () => {
           this.currentBooks.update(books => books.filter(book => book.id !== bookId));

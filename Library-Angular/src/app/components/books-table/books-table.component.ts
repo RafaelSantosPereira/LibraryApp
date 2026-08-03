@@ -8,6 +8,7 @@ import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/p
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { inject } from '@angular/core';
 import { Book } from '../../models/book.model';
+import { AuthService } from '../../services/auth.service';
 
 export interface TableColumn {
   key: string;
@@ -39,6 +40,11 @@ export interface DeleteBookEvent {
 export class BooksTableComponent {
   
   private paginatorIntl = inject(MatPaginatorIntl);
+  private authService = inject(AuthService);
+
+  isAdmin() {
+    return this.authService.isAdmin();
+  }
 
   data = input<any[]>([]);
   columns = input<TableColumn[]>([]);
@@ -77,6 +83,7 @@ export class BooksTableComponent {
       // page + 1 porque o MatPaginator começa no zero
       return `Page ${page + 1} of ${totalPages} (Total: ${length} items)`;
     };
+
   }
 
 

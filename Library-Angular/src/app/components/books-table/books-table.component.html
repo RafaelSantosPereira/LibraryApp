@@ -20,14 +20,16 @@
                 {{ book.available_copies > 0 ? 'available' : 'unavailable' }}
               </mat-chip>
             }
-
+            
             @case ('actions') {
-              <button mat-icon-button color="primary" (click)="onEditBook(book)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="onDeleteBook(book.id, book.title)">
-                <mat-icon>delete</mat-icon>
-              </button>
+              @if(isAdmin()){ 
+                <button mat-icon-button color="primary" (click)="onEditBook(book)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="onDeleteBook(book.id, book.title)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
             }
 
           }

@@ -64,6 +64,7 @@ export class SignupPageComponent {
       password: formValue.password as string,
       role: formValue.role as string 
     };
+    
     this.authService.signup(user).subscribe({
       next: (response) => {
         console.log(response);

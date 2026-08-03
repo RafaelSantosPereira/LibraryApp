@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { BooksService } from '../../services/books.service';
 import { CreateBookDto, UpdateBookDto } from '../../models/book.model';
 import { CommonModule } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @Component({
@@ -18,7 +19,8 @@ import { CommonModule } from '@angular/common';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatSelectModule
   ],
   templateUrl: './book-form-dialog.component.html',
   styleUrl: './book-form-dialog.component.scss'
@@ -34,6 +36,20 @@ export class BookFormDialogComponent implements OnInit {
 
   bookForm!: FormGroup;
   isEditMode = false;
+  currentYear = new Date().getFullYear();
+
+  categories: string[] = [
+    'Fiction',
+    'Non-Fiction',
+    'Science Fiction',
+    'Fantasy',
+    'Mystery',
+    'Biography',
+    'History',
+    'Science',
+    'Technology',
+    'Children'
+  ];
 
   ngOnInit() {
     // Verifica se está em modo edição
@@ -45,7 +61,7 @@ export class BookFormDialogComponent implements OnInit {
       title: [book?.title || '', [Validators.required, Validators.minLength(2)]],
       author: [book?.author || '', [Validators.required, Validators.minLength(2)]],
       category: [book?.category || '', Validators.required],
-      year: [book?.year || new Date().getFullYear(), [Validators.required, Validators.min(1000), Validators.max(9999)]],
+      year: [book?.year || this.currentYear, [Validators.required, Validators.min(1000), Validators.max(this.currentYear)]],
       total_copies: [book?.total_copies || 1, [Validators.required, Validators.min(1)]],
       available_copies: [book?.available_copies || 1, [Validators.required, Validators.min(0)]]
     });

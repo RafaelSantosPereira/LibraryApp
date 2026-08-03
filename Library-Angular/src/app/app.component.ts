@@ -1,7 +1,7 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
-
+import { AuthService } from './services/auth.service';
 
 
 @Component({
@@ -19,10 +19,13 @@ export class AppComponent {
   
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
+    this.authService.fetchCurrentUser().subscribe();
+
     const currentTheme = localStorage.getItem('theme');
     if(!currentTheme){
       localStorage.setItem('theme', 'light');

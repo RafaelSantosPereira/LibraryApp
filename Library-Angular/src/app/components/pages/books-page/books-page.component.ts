@@ -1,4 +1,4 @@
-import { Component, input, signal, ViewChild } from '@angular/core';
+import { Component, input, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { BooksTableComponent } from '../../books-table/books-table.component';
 import { Book } from '../../../models/book.model';
 import { TableColumn } from '../../books-table/books-table.component';
@@ -21,11 +21,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router'; 
+import { AuthService } from '../../../services/auth.service';
 
 
 @Component({
   selector: 'app-books-page',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     BooksTableComponent,
     MatToolbarModule,
@@ -49,6 +51,7 @@ export class BooksPageComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private authService = inject(AuthService);
 
 
   @ViewChild(BooksTableComponent) booksTable!: BooksTableComponent;
@@ -59,6 +62,10 @@ export class BooksPageComponent {
 
   currentPageIndex = 1;
   currentPageSize = 10;
+
+  isAdmin() {
+    return this.authService.isAdmin();
+  }
 
   constructor(private dialog: MatDialog) {}
 
