@@ -1,14 +1,12 @@
 const express = require('express');
+const authController = require('./auth.controller');
+const { authenticateToken } = require('./auth-midlewere'); // <-- IMPORT DOS MIDDLEWARES
 
-function createAuthRouter(controller, authenticateToken) {
-  const router = express.Router();
+const router = express.Router();
 
-  router.post('/login', controller.login);
-  router.get('/me', authenticateToken, controller.getCurrentUser);
-  router.post('/signup', controller.signup);
-  router.post('/logout', controller.logout);
+router.post('/login', authController.login);
+router.get('/me', authenticateToken, authController.getCurrentUser);
+router.post('/signup', authController.signup);
+router.post('/logout', authController.logout);
 
-  return router;
-}
-
-module.exports = { createAuthRouter };
+module.exports = router;

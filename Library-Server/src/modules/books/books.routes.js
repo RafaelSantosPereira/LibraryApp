@@ -1,16 +1,14 @@
 const express = require('express');
+const booksController = require('./books.controller');
+const { authenticateToken, isAdmin } = require('../auth/auth-midlewere');
 
-function createBooksRouter(controller, authenticateToken, isAdmin) {
-  const router = express.Router();
+const router = express.Router();
 
-  router.get('/', controller.listBooks);  // Public route to list all books
-  router.get('/search', controller.searchBooks); // Public route to search for books
-  router.get('/:id', controller.getBookById); // Public route to get a book by ID
-  router.post('/', authenticateToken, isAdmin, controller.createBook); // Protected route to create a new book
-  router.put('/:id', authenticateToken, isAdmin, controller.updateBook); // Protected route to update a book
-  router.delete('/:id', authenticateToken, isAdmin, controller.deleteBook); // Protected route to delete a book
+router.get('/', booksController.listBooks);
+router.get('/search', booksController.searchBooks);
+router.get('/:id', booksController.getBookById);
+router.post('/', authenticateToken, isAdmin, booksController.createBook);
+router.put('/:id', authenticateToken, isAdmin, booksController.updateBook);
+router.delete('/:id', authenticateToken, isAdmin, booksController.deleteBook);
 
-  return router;
-}
-
-module.exports = { createBooksRouter };
+module.exports = router;

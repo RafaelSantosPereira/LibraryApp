@@ -40,6 +40,7 @@
 .add-button {
   margin-left: auto; // Empurra o botão para a direita
   height: 56px;
+  background-color: var(--mdc-elevated-card-container-color) !important;
 }
 
 mat-card {

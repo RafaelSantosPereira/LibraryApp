@@ -54,35 +54,43 @@ export class SignupPageComponent {
   }, { validators: this.passwordMatchValidator }); 
 
   onSubmit() {
-  if (this.signupForm.valid) {
-    const formValue = this.signupForm.value;
-    console.log(formValue);
+    if (this.signupForm.valid) {
+      const formValue = this.signupForm.value;
+      console.log(formValue);
 
-    const user = {
-      username: formValue.name as string,
-      email: formValue.email as string,
-      password: formValue.password as string,
-      role: formValue.role as string 
-    };
-    
-    this.authService.signup(user).subscribe({
-      next: (response) => {
-        console.log(response);
-        this.snackBar.open(response.message, 'Close', {
-          duration: 4000,// 4 segundos
-          panelClass: ['success-snackbar'],
-          verticalPosition: 'top'
-        });
+      const user = {
+        username: formValue.name as string,
+        email: formValue.email as string,
+        password: formValue.password as string,
+        role: formValue.role as string 
+      };
+      
+      this.authService.signup(user).subscribe({
+        next: (response) => {
+          console.log(response);
+          this.snackBar.open(response.message, 'Close', {
+            duration: 4000,// 4 segundos
+            panelClass: ['success-snackbar'],
+            verticalPosition: 'top'
+          });
 
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
-    this.signupForm.reset();
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          if (err.status === 409) {
+            this.signupForm.get('email')?.setErrors({ emailExists: true });
+            this.signupForm.get('email')?.markAsTouched(); 
+          } else {
+            this.snackBar.open('An unexpected error occurred. Please try again.', 'Close', {
+              duration: 5000,
+              panelClass: ['error-snackbar'],
+              verticalPosition: 'top'
+            });
+          }
+        }
+      });
+    }
   }
-}
 
   // Validador Personalizado
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {

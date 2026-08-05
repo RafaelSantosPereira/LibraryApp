@@ -7,15 +7,19 @@ import { adminGuard } from './admin.guard';
 
 
 export const routes: Routes = [
-  // 1. Rotas Sem Sidebar/Header (Públicas)
+  // 1. Rotas Sem Sidebar/Header
   { path: 'login', component: LoginPageComponent },
   { path: 'signup', component: SignupPageComponent },
 
-  // 2. Rotas Com Sidebar/Header (Privadas)
+  // 2. Rotas Com Sidebar/Header 
   {
     path: '',
     component: MainLayoutComponent, // Este componente tem a sidebar
     children: [
+      {
+        path: '',
+        loadComponent: () => import('./components/pages/dashboard-page/dashboard-page.component').then(m => m.DashboardPageComponent),
+      },
       { path: 'books', 
         loadComponent: () => import('./components/pages/books-page/books-page.component').then(m => m.BooksPageComponent) 
       },

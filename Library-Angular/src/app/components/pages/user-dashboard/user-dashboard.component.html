@@ -1,0 +1,96 @@
+<div class="dashboard-container">
+  
+  <!-- BOAS VINDAS -->
+  <div class="welcome-header">
+    <h1>Hi, {{ username() }}!</h1>
+  </div>
+
+  <!-- ESTATÍSTICAS (KPIs) -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-icon color="primary">menu_book</mat-icon>
+      <div class="stat-info">
+        <h3>{{ stats.activeLoans }}</h3>
+        <p>Livros Ativos</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon style="color: #4CAF50;">done_all</mat-icon>
+      <div class="stat-info">
+        <h3>{{ stats.booksRead }}</h3>
+        <p>Livros Lidos</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon color="accent">favorite</mat-icon>
+      <div class="stat-info">
+        <h3>{{ stats.wishlistCount }}</h3>
+        <p>On Wishlist</p>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="main-content">
+    
+    <!-- EMPRÉSTIMOS ATIVOS -->
+    <div class="loans-section">
+      <h2>Active Loans</h2>
+      
+      <div class="loans-grid">
+        @for (loan of activeLoans; track loan.title) {
+          <mat-card class="loan-card">
+            <mat-card-header>
+              <mat-icon mat-card-avatar class="large-icon" color="primary">book</mat-icon>
+              <mat-card-title>{{ loan.title }}</mat-card-title>
+              <mat-card-subtitle>{{ loan.author }}</mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="due-date-info">
+                <span>Due Date:</span>
+                <strong>{{ loan.dueDate | date:'dd MMM yyyy' }}</strong>
+              </div>
+              
+              <!-- Barra de Progresso Urgência -->
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="loan.progress" 
+                [color]="getProgressBarColor(loan.daysLeft)">
+              </mat-progress-bar>
+              
+              <p class="days-left" [class.urgent]="loan.daysLeft <= 1">
+                @if (loan.daysLeft === 0) {
+                  Entrega hoje!
+                } @else {
+                   {{ loan.daysLeft }} days left
+                }
+              </p>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div class="wishlist-section">
+      <h2>My Wishlist</h2>
+      <mat-card class="wishlist-card">
+        <mat-list>
+          @for (book of wishlist; track book.title) {
+            <mat-list-item>
+              <mat-icon matListItemIcon color="accent">favorite_border</mat-icon>
+              <div matListItemTitle>{{ book.title }}</div>
+              <div matListItemLine>{{ book.author }}</div>
+            </mat-list-item>
+          }
+        </mat-list>
+        <mat-card-actions align="end">
+          <button mat-button color="primary">See All</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

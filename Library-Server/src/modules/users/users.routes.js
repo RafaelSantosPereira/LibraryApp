@@ -1,11 +1,9 @@
 const express = require('express');
+const usersController = require('./users.controller');
+const { authenticateToken, isAdmin } = require('../auth/auth-midlewere');
 
-function createUsersRouter(controller, authenticateToken, isAdmin) {
-  const router = express.Router();
+const router = express.Router();
 
-  router.get('/', authenticateToken, isAdmin, controller.getAllUsers);
+router.get('/', authenticateToken, isAdmin, usersController.getAllUsers);
 
-  return router;
-}
-
-module.exports = { createUsersRouter };
+module.exports = router;

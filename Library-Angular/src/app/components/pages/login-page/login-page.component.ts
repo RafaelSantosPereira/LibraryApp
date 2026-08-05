@@ -64,7 +64,7 @@ export class LoginPageComponent {
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required, Validators.minLength(5)])
+    password: new FormControl('', [Validators.required, Validators.minLength(6)])
   });
 
   onSubmit() {
@@ -85,7 +85,7 @@ export class LoginPageComponent {
 
           this.loginForm.reset();
           console.log(response);
-          this.router.navigate(['/books']);
+          this.router.navigate(['/']);
         },
         error: (err) => {
           const errorMessage = err.error?.message || 'Login failed. Please try again.';

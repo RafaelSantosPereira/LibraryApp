@@ -1,1 +1,15 @@
-<p>dashboard-page works!</p>
+<div class="dashboard-wrapper">
+  
+  @if (isAdmin()) {
+    
+    <!-- Se for o Bibliotecário/Admin, mostra o ecrã de gestão -->
+        <app-user-dashboard></app-user-dashboard>
+
+  } @else {
+
+    <!-- Se for um Leitor normal, mostra o ecrã pessoal que fizemos antes -->
+    <app-user-dashboard></app-user-dashboard>
+
+  }
+
+</div>

@@ -21,6 +21,7 @@
           <mat-icon matSuffix>email</mat-icon>
           @if (signupForm.get('email')?.hasError('required')) { <mat-error>Email is required</mat-error> }
           @if (signupForm.get('email')?.hasError('email')) { <mat-error>Invalid email address</mat-error> }
+          @if (signupForm.get('email')?.hasError('emailExists')) {<mat-error>This email is already registered!</mat-error>}
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -30,7 +31,7 @@
             <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
           </button>
           @if (signupForm.get('password')?.hasError('required')) { <mat-error>Password is required</mat-error> }
-          @if (signupForm.get('password')?.hasError('minlength')) { <mat-error>Min 6 characters</mat-error> }
+          @if (signupForm.get('password')?.hasError('minlength')) { <mat-error>Password must be at least 6 characters</mat-error> }
         </mat-form-field>
 
         <mat-form-field appearance="outline">

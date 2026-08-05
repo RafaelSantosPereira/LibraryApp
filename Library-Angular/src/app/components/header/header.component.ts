@@ -1,4 +1,4 @@
-import { Component, output, signal, inject, OnInit } from '@angular/core';
+import { Component, output, signal, inject, OnInit, input } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu'; // <-- NOVO IMPORT
 import { AuthService } from '../../services/auth.service'; // <-- Ajusta o caminho se necessário
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +16,8 @@ import { Router } from '@angular/router';
     MatButtonModule, 
     MatFormFieldModule, 
     MatInputModule,
-    MatMenuModule // <-- ADICIONADO AQUI
+    MatMenuModule,
+    RouterModule
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -26,6 +27,7 @@ export class HeaderComponent implements OnInit {
   menuToggled = output<void>();
   themeToggled = output<boolean>();
   isDarkMode = signal(false);
+  isSidebarOpen = input<boolean>(true);
   router = inject(Router);
 
   theme = localStorage.getItem('theme');

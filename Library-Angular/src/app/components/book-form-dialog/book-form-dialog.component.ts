@@ -63,7 +63,7 @@ export class BookFormDialogComponent implements OnInit {
       category: [book?.category || '', Validators.required],
       year: [book?.year || this.currentYear, [Validators.required, Validators.min(1000), Validators.max(this.currentYear)]],
       total_copies: [book?.total_copies || 1, [Validators.required, Validators.min(1)]],
-      available_copies: [book?.available_copies || 1, [Validators.required, Validators.min(0)]]
+      available_copies: [book?.available_copies, [Validators.required, Validators.min(0)]]
     });
 
     console.log('Modo edição:', this.isEditMode);

@@ -3,6 +3,14 @@
   <button mat-icon-button (click)="onMenuClick()">
     <mat-icon>menu</mat-icon>
   </button>
+
+  @if (!isSidebarOpen()) {
+    <div class="logo-area" routerLink="/" style="cursor: pointer;">
+      <mat-icon>library_books</mat-icon>
+      <span>BiblioTech</span>
+    </div>
+  }
+
   
   <div class="search-block">
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search-field">
@@ -46,7 +54,7 @@
   } @else {
     
     <!-- Botão de Login (aparece no lugar do botão de perfil se não estiver logado) -->
-    <button mat-raised-button color="accent" (click)="onLogin()">
+    <button mat-raised-button class="loginBt" (click)="onLogin()">
       <mat-icon>login</mat-icon>
       <span>Login</span>
     </button>

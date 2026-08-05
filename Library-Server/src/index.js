@@ -1,7 +1,5 @@
 require('dotenv').config();
-
-// O nosso ficheiro principal apenas importa a app montada e liga o servidor!
-const { createApp } = require('./src/app');
+const { createApp } = require('./app');
 
 const app = createApp();
 const PORT = process.env.PORT || 3000;

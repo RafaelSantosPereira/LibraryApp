@@ -37,3 +37,30 @@ CREATE TABLE user_auth (
   PRIMARY KEY (user_id),
   CONSTRAINT user_auth_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- Tabela de Empréstimos (Loans)
+CREATE TABLE `loans` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `book_id` int NOT NULL,
+  `loan_date` timestamp DEFAULT CURRENT_TIMESTAMP,
+  `due_date` timestamp NOT NULL, -- Data limite de entrega
+  `return_date` timestamp NULL DEFAULT NULL, -- Quando o utilizador devolveu
+  `status` enum('active', 'returned', 'overdue') DEFAULT 'active',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`book_id`) REFERENCES `books`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabela de Lista de Desejos (Wishlist / Favoritos)
+CREATE TABLE `favorites` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `book_id` int NOT NULL,
+  `added_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`book_id`) REFERENCES `books`(`id`) ON DELETE CASCADE,
+  UNIQUE KEY `unique_user_book` (`user_id`, `book_id`) -- Impede duplicados
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
