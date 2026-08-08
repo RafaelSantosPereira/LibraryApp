@@ -50,6 +50,11 @@ mat-paginator {
   --mdc-chip-elevated-container-color: #d1485d; 
   --mdc-chip-label-text-color: #ffffff;       
 }
+.center-align {
+  text-align: center !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
 
 /* --- MODO ESCURO  --- */
 :host-context(.dark-theme) {

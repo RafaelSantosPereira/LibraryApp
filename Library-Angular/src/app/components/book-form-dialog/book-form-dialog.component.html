@@ -80,8 +80,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!bookForm.valid">
+  <button mat-button class=" button-color" (click)="onCancel()">Cancel</button>
+  <button mat-raised-button  (click)="onSave()" [disabled]="!bookForm.valid">
     {{ isEditMode ? 'Update' : 'Save' }}
   </button>
 </mat-dialog-actions>

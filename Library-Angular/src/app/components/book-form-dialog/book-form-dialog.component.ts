@@ -52,9 +52,7 @@ export class BookFormDialogComponent implements OnInit {
   ];
 
   ngOnInit() {
-    // Verifica se está em modo edição
     this.isEditMode = !!(this.data?.book);
-    
     const book = this.data?.book;
     
     this.bookForm = this.fb.group({
@@ -63,15 +61,18 @@ export class BookFormDialogComponent implements OnInit {
       category: [book?.category || '', Validators.required],
       year: [book?.year || this.currentYear, [Validators.required, Validators.min(1000), Validators.max(this.currentYear)]],
       total_copies: [book?.total_copies || 1, [Validators.required, Validators.min(1)]],
-      available_copies: [book?.available_copies, [Validators.required, Validators.min(0)]]
+      available_copies: [book?.available_copies ?? 0] 
     });
 
+    if (this.isEditMode) {
+      this.bookForm.controls['available_copies'].setValidators([Validators.required, Validators.min(0)]);
+      this.bookForm.controls['available_copies'].updateValueAndValidity();
+    } else {
+      this.bookForm.controls['available_copies'].clearValidators();
+      this.bookForm.controls['available_copies'].updateValueAndValidity();
+    }
+
     console.log('Modo edição:', this.isEditMode);
-    console.log('Dados recebidos:', this.data);
-    console.log('Valores do form:', this.bookForm.value);
-
-
-
   }
 
   onSave() {

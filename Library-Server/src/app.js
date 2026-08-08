@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const authRouter = require('./modules/auth/auth.routes');
 const booksRouter = require('./modules/books/books.routes');
 const usersRouter = require('./modules/users/users.routes');
+const loansRouter = require('./modules/loans/loans.routes');
 
 function createApp() {
   const app = express();
@@ -22,6 +23,7 @@ function createApp() {
   app.use('/auth', authRouter);
   app.use('/books', booksRouter);
   app.use('/users', usersRouter);
+  app.use('/loans', loansRouter);
 
   return app;
 }

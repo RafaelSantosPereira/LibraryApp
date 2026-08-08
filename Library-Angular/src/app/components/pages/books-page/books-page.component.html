@@ -37,7 +37,8 @@
         [pageIndex]="currentPageIndex - 1"
         (pageChange)="onPageChange($event)"
         (deleteBook)="onDeleteBook($event)"
-        (editBook)="onEditBook($event)"> 
+        (editBook)="onEditBook($event)"
+        (requestBook)="onRequestBook($event)"> 
       </app-books-table>
     </mat-card-content>
   </mat-card>

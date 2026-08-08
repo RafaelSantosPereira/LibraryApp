@@ -9,6 +9,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookDeleteFormDialogComponent } from '../../book-delete-form-dialog/book-delete-form-dialog.component';
 import { DeleteBookEvent } from '../../books-table/books-table.component';
+import { LoanActionDialogComponent } from '../../loan-action-dialog/loan-action-dialog.component';
 import { DestroyRef } from '@angular/core';
 
 // Imports do Angular Material
@@ -150,7 +151,7 @@ export class BooksPageComponent {
         page: pageIndex, 
         limit: pageSize 
       },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: 'merge', // Mantém outros parâmetros da URL
     });
   }
   onDeleteBook(event: DeleteBookEvent) {
@@ -170,6 +171,34 @@ export class BooksPageComponent {
       width: '600px'
     });
 
+  }
+
+  onRequestBook(book: any) {
+    const dialogRef = this.dialog.open(LoanActionDialogComponent, {
+      width: '400px', // Fica elegante num formato um pouco mais estreito
+      data: { book: book } // Passamos o livro que o user clicou
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Se o utilizador confirmou, recarregamos a tabela para atualizar as "Available Copies"
+        const queryParamsSubscription = this.route.queryParams.subscribe(params => {
+        const SearchQuery = params['query'] || '';
+        const page = params['page'] ? Number(params['page']) : 1;
+        const limit = params['limit'] ? Number(params['limit']) : 10;
+        
+        this.currentPageIndex = page;
+        this.currentPageSize = limit;
+        this.searchQuery = SearchQuery;
+        
+        if (SearchQuery) {
+          this.booksService.searchBooks(SearchQuery, page, limit).subscribe();
+        } else {
+          this.loadBooks(page, limit);
+        }
+      });
+      }
+    });
   }
 
 }

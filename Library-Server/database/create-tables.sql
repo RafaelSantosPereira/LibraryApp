@@ -38,16 +38,15 @@ CREATE TABLE user_auth (
   CONSTRAINT user_auth_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
--- Tabela de Empréstimos (Loans)
 CREATE TABLE `loans` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `book_id` int NOT NULL,
-  `loan_date` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `due_date` timestamp NOT NULL, -- Data limite de entrega
-  `return_date` timestamp NULL DEFAULT NULL, -- Quando o utilizador devolveu
-  `status` enum('active', 'returned', 'overdue') DEFAULT 'active',
+  `request_date` timestamp DEFAULT CURRENT_TIMESTAMP, -- Quando o User clicou em "Request"
+  `loan_date` timestamp NULL DEFAULT NULL,            -- Quando o Admin aprovou
+  `due_date` timestamp NULL DEFAULT NULL,             -- Limite de entrega (ex: +14 dias)
+  `return_date` timestamp NULL DEFAULT NULL,          -- Quando foi devolvido
+  `status` enum('pending', 'active', 'returned', 'overdue') DEFAULT 'pending',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`book_id`) REFERENCES `books`(`id`) ON DELETE CASCADE

@@ -10,7 +10,8 @@
     <mat-card class="stat-card">
       <mat-icon color="primary">menu_book</mat-icon>
       <div class="stat-info">
-        <h3>{{ stats.activeLoans }}</h3>
+        <!-- Atualizado para ler do Signal: stats().activeCount -->
+        <h3>{{ stats().activeCount }}</h3>
         <p>Livros Ativos</p>
       </div>
     </mat-card>
@@ -18,28 +19,31 @@
     <mat-card class="stat-card">
       <mat-icon style="color: #4CAF50;">done_all</mat-icon>
       <div class="stat-info">
-        <h3>{{ stats.booksRead }}</h3>
+        <!-- Atualizado para ler do Signal: stats().returnedCount -->
+        <h3>{{ stats().returnedCount }}</h3>
         <p>Livros Lidos</p>
       </div>
     </mat-card>
 
     <mat-card class="stat-card">
-      <mat-icon color="accent">favorite</mat-icon>
+      <mat-icon color="accent">hourglass_empty</mat-icon>
       <div class="stat-info">
-        <h3>{{ stats.wishlistCount }}</h3>
-        <p>On Wishlist</p>
+        <!-- Aproveitei para mostrar os Pendentes em vez da Wishlist falsa para dar uso aos teus dados reais! -->
+        <h3>{{ stats().pendingCount }}</h3>
+        <p>Aguardam Aprovação</p>
       </div>
     </mat-card>
   </div>
 
   <div class="main-content">
     
-    <!-- EMPRÉSTIMOS ATIVOS -->
+    <!-- EMPRÉSTIMOS ATIVOS E PENDENTES -->
     <div class="loans-section">
-      <h2>Active Loans</h2>
+      <h2>My Loans</h2>
       
       <div class="loans-grid">
-        @for (loan of activeLoans; track loan.title) {
+        <!-- Atualizado para ler do Signal com parênteses: activeLoans() -->
+        @for (loan of activeLoans(); track loan.title) {
           <mat-card class="loan-card">
             <mat-card-header>
               <mat-icon mat-card-avatar class="large-icon" color="primary">book</mat-icon>
@@ -48,32 +52,65 @@
             </mat-card-header>
             
             <mat-card-content>
-              <div class="due-date-info">
-                <span>Due Date:</span>
-                <strong>{{ loan.dueDate | date:'dd MMM yyyy' }}</strong>
+              
+              <!-- 1. MOSTRAR O STATUS -->
+              <div class="status-badge" style="margin: 10px 0;">
+                <span [ngStyle]="{
+                  'background-color': loan.status === 'pending' ? '#ff9800' : '#4caf50',
+                  'color': 'white',
+                  'padding': '4px 8px',
+                  'border-radius': '4px',
+                  'font-size': '12px',
+                  'font-weight': 'bold',
+                  'text-transform': 'uppercase'
+                }">
+                  {{ loan.status }}
+                </span>
               </div>
-              
-              <!-- Barra de Progresso Urgência -->
-              <mat-progress-bar 
-                mode="determinate" 
-                [value]="loan.progress" 
-                [color]="getProgressBarColor(loan.daysLeft)">
-              </mat-progress-bar>
-              
-              <p class="days-left" [class.urgent]="loan.daysLeft <= 1">
-                @if (loan.daysLeft === 0) {
-                  Entrega hoje!
-                } @else {
-                   {{ loan.daysLeft }} days left
-                }
-              </p>
+
+              <!-- 2. LÓGICA CONDICIONAL: Mostrar barra só se estiver ACTIVE -->
+              @if (loan.status === 'active') {
+                <div class="due-date-info">
+                  <span>Due Date:</span>
+                  <!-- Atualizado para usar o campo real da DB: due_date -->
+                  <strong>{{ loan.due_date | date:'dd MMM yyyy' }}</strong>
+                </div>
+                
+                <!-- Barra de Progresso Urgência -->
+                <!-- Multiplicamos por 7.14 porque 100% / 14 dias = ~7.14% por dia -->
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="100 - (calculateDaysLeft(loan.due_date) * 7.14)" 
+                  [color]="getProgressBarColor(calculateDaysLeft(loan.due_date))">
+                </mat-progress-bar>
+                
+                <!-- Atualizado para usar a tua função calculateDaysLeft() -->
+                <p class="days-left" [class.urgent]="calculateDaysLeft(loan.due_date) <= 1">
+                  @if (calculateDaysLeft(loan.due_date) <= 0) {
+                    Entrega hoje ou em atraso!
+                  } @else {
+                    {{ calculateDaysLeft(loan.due_date) }} days left
+                  }
+                </p>
+
+              } @else {
+                <!-- 3. O que mostrar quando está PENDING -->
+                <div class="pending-info" style="margin-top: 16px; color: #666; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px;">schedule</mat-icon>
+                  Awaiting Administrator approval...
+                </div>
+              }
+
             </mat-card-content>
           </mat-card>
+        } @empty {
+          <!-- O bloco @empty é uma feature brutal do Angular para quando o array está vazio! -->
+          <p class="no-loans-msg" style="color: #666;">You don't have any active or pending loans at the moment.</p>
         }
       </div>
     </div>
 
-    <!-- WISHLIST -->
+    <!-- WISHLIST (Mantido o design antigo com dados fake para não quebrar) -->
     <div class="wishlist-section">
       <h2>My Wishlist</h2>
       <mat-card class="wishlist-card">

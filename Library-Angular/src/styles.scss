@@ -78,3 +78,7 @@ mat-card-title, mat-card-subtitle {
   --mdc-snackbar-container-color: #f44336;
   --mdc-snackbar-supporting-text-color: white;
 }
+
+.button-color{
+   background-color: var(--mdc-elevated-card-container-color) !important;
+}

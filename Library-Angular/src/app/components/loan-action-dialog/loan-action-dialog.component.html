@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>Request Book</h2>
+
+<mat-dialog-content>
+  <div class="confirmation-content">
+    <mat-icon color="primary" class="large-icon">library_add</mat-icon>
+    
+    <div class="question">
+      <p>Are you sure you want to request a copy of</p>
+      <p>
+        <strong>"{{ data.book.title }}"</strong>?
+      </p>
+    </div>
+
+    <p class="details">
+      By {{ data.book.author }}
+    </p>
+
+    <div class="info-box">
+      <mat-icon>info</mat-icon>
+      <span>Once approved by an Administrator, you will have 14 days to return the book.</span>
+    </div>
+
+    <!-- Mensagem de erro caso a API falhe -->
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="action-btn" (click)="onCancel()" [disabled]="isSubmitting">Cancel</button>
+  
+  <button mat-raised-button color="primary" class="action-btn" (click)="onConfirm()" [disabled]="isSubmitting">
+    @if (isSubmitting) {
+      Requesting...
+    } @else {
+      Confirm Request
+    }
+  </button>
+</mat-dialog-actions>

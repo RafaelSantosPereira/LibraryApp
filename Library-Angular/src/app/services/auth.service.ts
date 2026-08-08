@@ -24,14 +24,12 @@ export class AuthService {
   private httpClient = inject(HttpClient);
   private apiUrl = 'http://localhost:3000';
 
-  // 1. Criamos um Signal que guarda o utilizador APENAS na memória RAM
   currentUser = signal<User | null>(null);
 
   signup(user: SignupUser) {
     return this.httpClient.post<{message: string}>(`${this.apiUrl}/auth/signup`, user);
   }
 
-  // 2. O Login agora atualiza o Signal em vez do localStorage
   login(email: string, password: string) {
     return this.httpClient.post<{message: string, user: User}>(
       `${this.apiUrl}/auth/login`, 
@@ -62,6 +60,9 @@ export class AuthService {
         return of(null); 
       })
     );
+  }
+  isLoggedIn() {
+    return this.currentUser() !== null;
   }
   isAdmin() {
     const user = this.currentUser();
