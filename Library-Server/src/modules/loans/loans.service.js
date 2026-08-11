@@ -53,6 +53,20 @@ const loansService = {
     return { message: 'Loan approved successfully' };
   },
 
+  async rejectLoan(loanId) {
+    const [result] = await db.query(
+      `UPDATE loans 
+       SET status = 'rejected' 
+       WHERE id = ? AND status = 'pending'`,
+      [loanId]
+    );
+
+    if (result.affectedRows === 0) {
+      throw new Error('Loan not found or already processed');
+    }
+    return { message: 'Loan rejected successfully' };
+  },
+
   // 3. Admin regista a devolução do livro
   async returnBook(loanId) {
     const connection = await db.getConnection();
@@ -71,7 +85,7 @@ const loansService = {
         [loanId]
       );
 
-      // 2º Passo: Devolve a cópia à estante
+      // give back the book to the library (increment available copies)
       await connection.query('UPDATE Books SET available_copies = available_copies + 1 WHERE id = ?', [bookId]);
 
       await connection.commit();
@@ -97,13 +111,12 @@ const loansService = {
     return rows;
   },
   
+  // See which books IDS the user has borrowed 
   async getbookLoans(userId) {
     const [rows] = await db.query(
-      `SELECT book_id FROM loans WHERE user_id = ?`,
+      `SELECT book_id FROM loans WHERE user_id = ? AND status NOT IN ('returned', 'rejected')`,
       [userId]
     );
-    console.log('UserId:', userId);
-    console.log(rows);
     return rows;
   },
 

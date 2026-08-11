@@ -1,10 +1,15 @@
 <div class="dashboard-container">
+
+    
   
+  <!-- BOAS VINDAS -->
   <div class="welcome-header">
     <h1>Hi, {{ username() }}!</h1>
   </div>
 
-  <!-- STATISTICS  -->
+  
+
+  <!-- ESTATÍSTICAS (KPIs) -->
   <div class="stats-grid">
     <mat-card class="stat-card">
       <mat-icon color="primary">menu_book</mat-icon>
@@ -32,16 +37,18 @@
   </div>
 
   <div class="main-content">
-    <!-- ACTIVE AND PENDING LOANS -->
+    
     <div class="loans-section">
       <h2>My Loans</h2>
       
       <div class="loans-grid">
         @for (loan of activeLoans(); track loan.title) {
           <app-loan-card 
-            [loan]="loan">
+            [loan]="loan" 
+            [isAdmin]="true" >
           </app-loan-card>
         } @empty {
+          <!-- @empty is a feature of Angular for when the array is empty! -->
           <p class="no-loans-msg" style="color: #666;">You don't have any active or pending loans at the moment.</p>
         }
       </div>

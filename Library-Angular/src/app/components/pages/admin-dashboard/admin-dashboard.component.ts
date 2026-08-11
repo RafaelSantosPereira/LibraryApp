@@ -8,15 +8,24 @@ import { MatListModule } from '@angular/material/list';
 import { AuthService } from '../../../services/auth.service';
 import { LoansService } from '../../../services/loans.service';
 import { LoanCardComponent } from '../../loan-card/loan-card.component';
+import { YesNoDialogComponent } from '../../dialogs/yes-no-dialog/yes-no-dialog.component';
 
 @Component({
-  selector: 'app-user-dashboard',
-  standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatProgressBarModule, MatListModule, LoanCardComponent],
-  templateUrl: './user-dashboard.component.html',
-  styleUrl: './user-dashboard.component.scss'
+  selector: 'app-admin-dashboard',
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatProgressBarModule,
+    MatListModule,
+    LoanCardComponent,
+    YesNoDialogComponent
+  ],
+  templateUrl: './admin-dashboard.component.html',
+  styleUrl: './admin-dashboard.component.scss'
 })
-export class UserDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit {
   authService = inject(AuthService);
   loansService = inject(LoansService);
   
@@ -36,7 +45,7 @@ export class UserDashboardComponent implements OnInit {
     this.loansService.userLoans().filter(loan => loan.status === 'active' || loan.status === 'pending')
   );
 
-  // Calcula estatísticas a partir do signal
+  // Ccalculates statistics from the signal
   stats = computed(() => {
     const allLoans = this.loansService.userLoans();
     return {
@@ -46,9 +55,9 @@ export class UserDashboardComponent implements OnInit {
     };
   });
 
-  // Função auxiliar para calcular os dias no HTML
+  // Helper function to calculate days left for the HTML
   calculateDaysLeft(dueDate: string | null): number {
-    if (!dueDate) return 0; // Ex: Se estiver pending, ainda não tem due_date
+    if (!dueDate) return 0; 
     
     const due = new Date(dueDate);
     const now = new Date();
@@ -63,4 +72,6 @@ export class UserDashboardComponent implements OnInit {
     if (daysLeft > 1) return 'accent';  
     return 'warn';                      
   }
+
+  
 }
