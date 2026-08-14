@@ -6,7 +6,7 @@
   padding: 20px;
   box-sizing: border-box;
   
-  // Garante que é transparente para ver o fundo do body
+  // Ensures it is transparent so the body background remains visible
   background-color: transparent; 
 }
 
@@ -23,13 +23,13 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* Espaçamento entre os inputs */
+  gap: 8px; /* Spacing between the inputs */
   margin-top: 20px;
 }
 
 .login-button {
   margin-top: 16px;
-  padding: 24px; /* Botão mais alto e fácil de clicar */
+  padding: 24px; /* Taller button that is easier to click */
   font-size: 16px;
   font-weight: 500;
 }
@@ -42,9 +42,9 @@
 
 
 
-/* ... teus estilos de card ... */
+/* ... your card styles ... */
 
-/* ALTERAÇÃO AQUI: Forçar a cor do título */
+/* CHANGE HERE: Force the title color */
 mat-card-title {
   font-size: 24px !important;
   font-weight: 500;

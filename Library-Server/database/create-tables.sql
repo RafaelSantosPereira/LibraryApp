@@ -46,7 +46,7 @@ CREATE TABLE `loans` (
   `loan_date` timestamp NULL DEFAULT NULL,            -- Quando o Admin aprovou
   `due_date` timestamp NULL DEFAULT NULL,             -- Limite de entrega (ex: +14 dias)
   `return_date` timestamp NULL DEFAULT NULL,          -- Quando foi devolvido
-  `status` enum('pending', 'active', 'returned', 'overdue') DEFAULT 'pending',
+  `status` enum('pending', 'active', 'returned', 'overdue', 'rejected') DEFAULT 'pending',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
   FOREIGN KEY (`book_id`) REFERENCES `books`(`id`) ON DELETE CASCADE

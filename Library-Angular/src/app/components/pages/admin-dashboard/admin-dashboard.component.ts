@@ -5,10 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
-import { AuthService } from '../../../services/auth.service';
-import { LoansService } from '../../../services/loans.service';
-import { LoanCardComponent } from '../../loan-card/loan-card.component';
-import { YesNoDialogComponent } from '../../dialogs/yes-no-dialog/yes-no-dialog.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoansService } from '../../../core/services/loans.service';
+import { LoanCardComponent } from '../../shared/loan-card/loan-card.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -19,8 +18,7 @@ import { YesNoDialogComponent } from '../../dialogs/yes-no-dialog/yes-no-dialog.
     MatButtonModule,
     MatProgressBarModule,
     MatListModule,
-    LoanCardComponent,
-    YesNoDialogComponent
+    LoanCardComponent
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss'
@@ -29,7 +27,7 @@ export class AdminDashboardComponent implements OnInit {
   authService = inject(AuthService);
   loansService = inject(LoansService);
   
-  username = computed(() => this.authService.currentUser()?.username || 'Leitor');
+  username = computed(() => this.authService.currentUser()?.username || 'Reader');
 
   wishlist = [
     { title: 'Dune', author: 'Frank Herbert' },
@@ -45,7 +43,7 @@ export class AdminDashboardComponent implements OnInit {
     this.loansService.userLoans().filter(loan => loan.status === 'active' || loan.status === 'pending')
   );
 
-  // Ccalculates statistics from the signal
+  // Calculates statistics from the signal
   stats = computed(() => {
     const allLoans = this.loansService.userLoans();
     return {

@@ -9,20 +9,13 @@
       <div class="search-container">
         <mat-form-field appearance="outline" class="search-field">
           <mat-label>Search books</mat-label>
-          <!-- Changed [(ngModel)] to split syntax because searchQuery is a Signal -->
           <input matInput 
-            placeholder="Title, author, category..." 
-            [ngModel]="searchQuery()" 
+            placeholder="User, email title..." 
+            [(ngModel)]="searchQuery" 
             (ngModelChange)="onSearchChange($event)">
           <mat-icon matPrefix>search</mat-icon>
         </mat-form-field>
         
-        @if(isAdmin()){
-          <button mat-raised-button class="add-button" (click)="addBook()">
-          <mat-icon>add</mat-icon>
-          Add Book
-        </button>
-        }
       </div>
     </mat-card-content>
   </mat-card>
@@ -31,13 +24,13 @@
   <mat-card>
     <mat-card-content>
       <app-books-table 
-        [data]="booksData()" 
+        [data]="loansData()" 
         [columns]="tableConfig()"
-        [totalItems]="totalBooks()"
+        [totalItems]="totalLoans()"
         [pageSize]="currentPageSize"
         [pageIndex]="currentPageIndex - 1"
         (pageChange)="onPageChange($event)"
-        (actionClicked)="handleTableAction($event)"> 
+        (actionClicked)="handleTableAction($event)">
       </app-books-table>
     </mat-card-content>
   </mat-card>

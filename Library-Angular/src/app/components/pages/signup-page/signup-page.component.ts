@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService, User } from '../../../services/auth.service';
+import { AuthService, User } from '../../../core/services/auth.service';
 
 
 
@@ -69,7 +69,7 @@ export class SignupPageComponent {
         next: (response) => {
           console.log(response);
           this.snackBar.open(response.message, 'Close', {
-            duration: 4000,// 4 segundos
+            duration: 4000, // 4 seconds
             panelClass: ['success-snackbar'],
             verticalPosition: 'top'
           });
@@ -92,7 +92,7 @@ export class SignupPageComponent {
     }
   }
 
-  // Validador Personalizado
+  // Custom validator
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
@@ -101,11 +101,11 @@ export class SignupPageComponent {
       control.get('confirmPassword')?.setErrors({ mismatch: true });
       return { mismatch: true };
     } else {
-      // Se corrigiu, removemos o erro de mismatch (mas mantemos outros erros como 'required' se existirem)
+      // If it was corrected, remove the mismatch error (while keeping other errors such as 'required' if they exist)
       const confirmControl = control.get('confirmPassword');
       if (confirmControl?.hasError('mismatch')) {
         delete confirmControl.errors?.['mismatch'];
-        // Se não sobrarem erros, definimos como null para ficar válido
+        // If no errors remain, set it to null to make it valid
         if (!Object.keys(confirmControl.errors || {}).length) {
           confirmControl.setErrors(null);
         }

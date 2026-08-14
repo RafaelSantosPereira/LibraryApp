@@ -1,0 +1,77 @@
+<mat-card class="loan-card">
+
+
+   <div class="top-right-actions">
+    
+    <!-- Return button: only appears for admins when the book is active -->
+    @if (isAdmin() && loan().status === 'active') {
+      <button mat-icon-button color="primary" (click)="onReturn()" matTooltip="Return Book">
+        <mat-icon>keyboard_return</mat-icon>
+      </button>
+    }
+
+    <!-- The badge: always appears next to it -->
+    <div class="status-badge" [ngClass]="loan().status">
+      {{ loan().status }}
+    </div>
+
+  </div>
+  
+
+
+  <mat-card-header>
+    <mat-icon mat-card-avatar class="large-icon" color="primary">book</mat-icon>
+    <mat-card-title>{{ loan().title }}</mat-card-title>
+    <mat-card-subtitle>{{ loan().author }}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content>
+    
+    @if (loan().status === 'active') {
+      <div class="due-date-info">
+        <span>Due Date:</span>
+        <strong>{{ loan().due_date | date:'dd MMM yyyy' }}</strong>
+      </div>
+      
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="100 - (calculateDaysLeft(loan().due_date) * 7.14)" 
+        [color]="getProgressBarColor(calculateDaysLeft(loan().due_date))">
+      </mat-progress-bar>
+      
+      <p class="days-left" [class.urgent]="calculateDaysLeft(loan().due_date) <= 1">
+        @if (calculateDaysLeft(loan().due_date) <= 0) {
+           Return today!
+        } @else {
+          {{ calculateDaysLeft(loan().due_date) }} days left
+        }
+      </p>
+
+    } @else if (loan().status === 'pending') {
+      
+      <div class="pending-wrapper">
+
+        <div class="pending-info">
+          <mat-icon>schedule</mat-icon>
+          Awaiting Administrator approval...
+        </div>
+
+        @if (isAdmin()) {
+          <div class="admin-actions">
+            <button mat-raised-button color="warn" (click)="onReject()">
+              <mat-icon>cancel</mat-icon>
+              Reject
+            </button>
+            <button mat-raised-button color="primary" (click)="onApprove()">
+              <mat-icon>check_circle</mat-icon>
+              Approve
+            </button>
+          </div>
+          
+        }
+      </div>
+
+    }
+
+  </mat-card-content>
+</mat-card>

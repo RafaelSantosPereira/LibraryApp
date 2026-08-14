@@ -1,6 +1,6 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 import { UserDashboardComponent } from '../user-dashboard/user-dashboard.component';
 import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.component';
@@ -15,6 +15,6 @@ import { AdminDashboardComponent } from '../admin-dashboard/admin-dashboard.comp
 export class DashboardPageComponent {
   private authService = inject(AuthService);
 
-  // Criamos um signal computed para saber logo se é admin
+  // Create a computed signal to immediately know whether the user is an admin
   isAdmin = computed(() => this.authService.isAdmin());
 }

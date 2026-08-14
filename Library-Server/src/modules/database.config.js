@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config(); // Garante que lê as variáveis de ambiente logo aqui
+require('dotenv').config(); // Ensures environment variables are loaded here immediately
 
-// Criamos a pool de conexões uma única vez
+// Create the connection pool only once
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -12,5 +12,5 @@ const db = mysql.createPool({
   queueLimit: 0
 });
 
-// Exportamos a pool para poder ser importada diretamente em qualquer ficheiro
+// Export the pool so it can be imported directly in any file
 module.exports = db;

@@ -6,7 +6,7 @@ import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes, withComponentInputBinding(), withRouterConfig({
-            paramsInheritanceStrategy: 'always'//importante para herdar parámetros de url da rotas Pai em rotas filhas/children
+            paramsInheritanceStrategy: 'always' // important for inheriting URL parameters from parent routes to child routes
         })), provideHttpClient()],
        
 };

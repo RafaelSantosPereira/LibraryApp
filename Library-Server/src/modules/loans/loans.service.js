@@ -1,34 +1,34 @@
 const db = require('../database.config');
 
 const loansService = {
-  // 1. User requisita o livro
+  // 1. User requests the book
   async requestBook(userId, bookId) {
     const connection = await db.getConnection();
     try {
-      // Inicia a transação de segurança
+      // Start the secure transaction
       await connection.beginTransaction();
 
-      // Verifica se o livro existe e tem cópias
-      // O 'FOR UPDATE' bloqueia a linha temporariamente para evitar que 2 users requisitem o último livro ao mesmo tempo (Concurrency)
+      // Check whether the book exists and has copies
+      // The 'FOR UPDATE' lock temporarily blocks the row to prevent two users from requesting the last copy at the same time (Concurrency)
       const [books] = await connection.query('SELECT available_copies FROM Books WHERE id = ? FOR UPDATE', [bookId]);
       
       if (books.length === 0) throw new Error('Book not found');
       if (books[0].available_copies <= 0) throw new Error('No copies available for this book');
 
-      // 1º Passo: Retirar 1 cópia disponível
+      // Step 1: Remove 1 available copy
       await connection.query('UPDATE Books SET available_copies = available_copies - 1 WHERE id = ?', [bookId]);
 
-      // 2º Passo: Criar o registo com estado 'pending'
+      // Step 2: Create a record with status 'pending'
       const [result] = await connection.query(
         `INSERT INTO loans (user_id, book_id, status) VALUES (?, ?, 'pending')`,
         [userId, bookId]
       );
 
-      // Tudo correu bem, guarda as alterações!
+      // Everything went well, so save the changes!
       await connection.commit();
       return { id: result.insertId, message: 'Book requested successfully. Wait for Admin approval.' };
     } catch (error) {
-      // Se algo falhou, reverte tudo!
+      // If something failed, roll everything back!
       await connection.rollback();
       throw error;
     } finally {
@@ -36,7 +36,60 @@ const loansService = {
     }
   },
 
-  // 2. Admin aprova o empréstimo (Dá 14 dias para devolver)
+  async getAllLoans(page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    
+    const [countResult] = await db.query('SELECT COUNT(*) as total FROM loans');
+    const totalItems = countResult[0].total;
+
+    const [rows] = await db.query(
+      `SELECT l.id, l.status, l.request_date, l.loan_date, l.due_date, b.title, u.username as user_name, u.email as user_email
+       FROM loans l
+       JOIN Books b ON l.book_id = b.id
+       JOIN users u ON l.user_id = u.id
+       ORDER BY l.request_date DESC
+       LIMIT ? OFFSET ?`,
+      [limit, offset]
+    );
+
+    return {
+      data: rows,
+      meta: { total: totalItems, page, last_page: Math.ceil(totalItems / limit) }
+    };
+  },
+
+  async searchLoans(query, page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    const searchTerm = `%${query}%`;
+
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) as total 
+       FROM loans l
+       JOIN Books b ON l.book_id = b.id
+       JOIN users u ON l.user_id = u.id
+       WHERE b.title LIKE ? OR u.username LIKE ? OR u.email LIKE ?`,
+      [searchTerm, searchTerm, searchTerm]
+    );
+    const totalItems = countResult[0].total;
+
+    const [rows] = await db.query(
+      `SELECT l.id, l.status, l.request_date, l.loan_date, l.due_date, b.title, u.username as user_name, u.email as user_email
+       FROM loans l
+       JOIN Books b ON l.book_id = b.id
+       JOIN users u ON l.user_id = u.id
+       WHERE b.title LIKE ? OR u.username LIKE ? OR u.email LIKE ?
+       ORDER BY l.request_date DESC
+       LIMIT ? OFFSET ?`,
+      [searchTerm, searchTerm, searchTerm, limit, offset]
+    );
+
+    return {
+      data: rows,
+      meta: { total: totalItems, page, last_page: Math.ceil(totalItems / limit) }
+    };
+  },
+
+  // Admin approves the loan (gives 14 days to return it)
   async approveLoan(loanId) {
     const [result] = await db.query(
       `UPDATE loans 
@@ -54,32 +107,48 @@ const loansService = {
   },
 
   async rejectLoan(loanId) {
-    const [result] = await db.query(
-      `UPDATE loans 
-       SET status = 'rejected' 
-       WHERE id = ? AND status = 'pending'`,
-      [loanId]
-    );
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
 
-    if (result.affectedRows === 0) {
-      throw new Error('Loan not found or already processed');
+      // Find out which book belongs to this request
+      const [loans] = await connection.query('SELECT book_id FROM loans WHERE id = ?', [loanId]);
+      
+      if (loans.length === 0) throw new Error('Loan request not found');
+      const bookId = loans[0].book_id;
+
+      // Change the loan status to 'rejected'
+      await connection.query(`UPDATE loans SET status = 'rejected' WHERE id = ?`, [loanId]);
+
+      // RETURN THE COPY TO THE SHELF (Super Important!)
+      await connection.query('UPDATE books SET available_copies = available_copies + 1 WHERE id = ?', [bookId]);
+
+      // Save all changes
+      await connection.commit();
+      return { message: 'Loan rejected and book returned to available stock' };
+      
+    } catch (error) {
+      // If anything fails, revert all changes
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
     }
-    return { message: 'Loan rejected successfully' };
   },
 
-  // 3. Admin regista a devolução do livro
+  // 3. Admin records the book return
   async returnBook(loanId) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
 
-      // Encontra qual foi o livro deste empréstimo
+      // Find which book belongs to this loan
       const [loans] = await connection.query('SELECT book_id FROM loans WHERE id = ? AND status = ?', [loanId, 'active']);
       if (loans.length === 0) throw new Error('Active loan not found');
       
       const bookId = loans[0].book_id;
 
-      // 1º Passo: Marca como devolvido
+      // Step 1: Mark it as returned
       await connection.query(
         `UPDATE loans SET status = 'returned', return_date = CURRENT_TIMESTAMP WHERE id = ?`,
         [loanId]
@@ -98,7 +167,7 @@ const loansService = {
     }
   },
 
-  // 4. Ver os empréstimos do próprio User (Para a Dashboard)
+  // 4. View the user's own loans (for the dashboard)
   async getUserLoans(userId) {
     const [rows] = await db.query(
       `SELECT l.id, l.status, l.request_date, l.due_date, b.title, b.author 
@@ -120,7 +189,7 @@ const loansService = {
     return rows;
   },
 
-  // 5. Admin vê todas as reservas pendentes
+  // 5. Admin sees all pending reservations
   async getPendingRequests() {
     const [rows] = await db.query(
       `SELECT l.id, l.request_date, u.username, u.email, b.title 

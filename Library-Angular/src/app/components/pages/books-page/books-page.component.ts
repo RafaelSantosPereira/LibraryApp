@@ -1,28 +1,28 @@
-import { Component, input, signal, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { BooksTableComponent } from '../../books-table/books-table.component';
-import { Book } from '../../../models/book.model';
-import { TableColumn } from '../../books-table/books-table.component';
-import { BookFormDialogComponent } from '../../book-form-dialog/book-form-dialog.component';
-import { BooksService } from '../../../services/books.service';
-import { inject } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, computed, inject, signal, ViewChild, ChangeDetectionStrategy, OnInit, DestroyRef } from '@angular/core';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BookDeleteFormDialogComponent } from '../../book-delete-form-dialog/book-delete-form-dialog.component';
-import { DeleteBookEvent } from '../../books-table/books-table.component';
-import { LoanActionDialogComponent } from '../../loan-action-dialog/loan-action-dialog.component';
-import { DestroyRef } from '@angular/core';
 
-// Imports do Angular Material
+// Angular Material imports
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatDialog } from '@angular/material/dialog';
-import { RouterModule } from '@angular/router'; 
-import { AuthService } from '../../../services/auth.service';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import {PageEvent } from '@angular/material/paginator';
+
+
+// Components & Services
+import { BooksTableComponent } from '../../shared/books-table/books-table.component';
+import { BookFormDialogComponent } from '../../dialogs/book-form-dialog/book-form-dialog.component';
+import { BookDeleteFormDialogComponent } from '../../dialogs/book-delete-form-dialog/book-delete-form-dialog.component';
+import { LoanActionDialogComponent } from '../../dialogs/loan-action-dialog/loan-action-dialog.component';
+import { BooksService } from '../../../core/services/books.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoansService } from '../../../core/services/loans.service';
+import { Book } from '../../../models/book.model';
+import { TableColumn } from '../../../models/table.model'
 
 
 @Component({
@@ -44,36 +44,35 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './books-page.component.html',
   styleUrl: './books-page.component.scss'
 })
-
-
-export class BooksPageComponent {
+export class BooksPageComponent implements OnInit {
   
   private booksService = inject(BooksService);
+  private loansService = inject(LoansService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
-  private authService = inject(AuthService);
-
 
   @ViewChild(BooksTableComponent) booksTable!: BooksTableComponent;
 
+  // Data signals
   booksData = this.booksService.displayedBooks;
   totalBooks = this.booksService.totalBooks;
+  
+  // State variables
   searchQuery = signal('');
-
   currentPageIndex = 1;
   currentPageSize = 10;
 
-  isAdmin() {
-    return this.authService.isAdmin();
-  }
+  // Auth and Loans state
+  isAdmin = computed(() => this.authService.isAdmin());
+  isLoggedIn = computed(() => this.authService.isLoggedIn());
+  requestedBookIds = this.loansService.currentUserBookLoans;
 
   constructor(private dialog: MatDialog) {}
 
-  
-
   ngOnInit() {
-    // Subscreve às mudanças na URL
+    // Subscribe to URL changes
     const queryParamsSubscription = this.route.queryParams.subscribe(params => {
       const SearchQuery = params['query'] || '';
       const page = params['page'] ? Number(params['page']) : 1;
@@ -81,7 +80,7 @@ export class BooksPageComponent {
       
       this.currentPageIndex = page;
       this.currentPageSize = limit;
-      this.searchQuery = SearchQuery;
+      this.searchQuery.set(SearchQuery); // Update signal
       
       if (SearchQuery) {
         this.booksService.searchBooks(SearchQuery, page, limit).subscribe();
@@ -93,33 +92,97 @@ export class BooksPageComponent {
     this.destroyRef.onDestroy(() => {
       queryParamsSubscription.unsubscribe();
     });
-
-
   }
 
   loadBooks(page: number, limit: number) {
     this.booksService.getBooks(page, limit).subscribe();
   }
 
-  tableConfig = signal<TableColumn[]>([
+  // Use computed() so the actions dynamically update when the state changes 
+  // (e.g., when the user requests a book or logs in)
+  tableConfig = computed<TableColumn[]>(() => [
     { key: 'title', header: 'Title', type: 'text' },
     { key: 'author', header: 'Author', type: 'text' },
     { key: 'category', header: 'Category', type: 'text' },
     { key: 'total_copies', header: 'Total Copies', type: 'text' },
     { key: 'available_copies', header: 'Available Copies', type: 'text' },
-    { key: 'status', header: 'Status', type: 'status' }, 
-    { key: 'actions', header: 'Actions', type: 'actions' }
+    { 
+      key: 'status', 
+      header: 'Status', 
+      type: 'status',
+      // Dynamic status configuration for Books
+      formatStatus: (row: any) => ({
+        text: row.available_copies > 0 ? 'available' : 'unavailable',
+        colorClass: row.available_copies > 0 ? 'available' : 'unavailable'
+      })
+    }, 
+    { 
+      key: 'actions', 
+      header: 'Actions', 
+      type: 'actions',
+      actions: [
+        {
+          actionKey: 'edit',
+          icon: 'edit',
+          color: 'primary',
+          tooltip: 'Edit Book',
+          show: (row) => this.isAdmin()
+        },
+        {
+          actionKey: 'delete',
+          icon: 'delete',
+          color: 'warn',
+          tooltip: 'Delete Book',
+          show: (row) => this.isAdmin()
+        },
+        {
+          actionKey: 'request',
+          icon: 'library_add',
+          color: 'warn',
+          tooltip: 'Request Book',
+          // Show only if logged in, has copies, and hasn't been requested yet
+          show: (row) => this.isLoggedIn() && row.available_copies > 0 && !this.requestedBookIds().includes(row.id)
+        },
+        {
+          actionKey: 'login_required',
+          icon: 'lock_outline',
+          color: 'primary', // Using standard color, can be styled with CSS if needed
+          tooltip: 'Log in for available actions',
+          // Show only if NOT logged in
+          show: (row) => !this.isLoggedIn()
+        }
+      ]
+    }
   ]);
 
+  // Centralized action handler
+  handleTableAction(event: { actionKey: string; row: Book }) {
+    const { actionKey, row } = event;
+
+    switch (actionKey) {
+      case 'edit':
+        this.onEditBook(row);
+        break;
+      case 'delete':
+        this.onDeleteBook(row);
+        break;
+      case 'request':
+        this.onRequestBook(row);
+        break;
+      case 'login_required':
+        // Do nothing, or open a login dialog/snackbar if you want!
+        console.log('User must log in');
+        break;
+    }
+  }
+
   addBook() {
-    const dialogRef = this.dialog.open(BookFormDialogComponent, {
+    this.dialog.open(BookFormDialogComponent, {
       width: '600px'
     });
   }
 
-  // Esta função corre quando a Tabela emite o evento "pageChange"
-  onPageChange(event: any) {
-    // O MatPaginator usa índice 0 (página 0, 1, 2), mas o backend espera (1, 2, 3)
+  onPageChange(event: PageEvent) {
     const pageIndex = event.pageIndex + 1; 
     const pageSize = event.pageSize;
     
@@ -129,7 +192,7 @@ export class BooksPageComponent {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { 
-        query: this.searchQuery || undefined, // Se query vazia, remove o parâmetro
+        query: this.searchQuery() || undefined, 
         page: pageIndex, 
         limit: pageSize 
       },
@@ -138,67 +201,50 @@ export class BooksPageComponent {
   }
 
   onSearchChange(query: string) {
-    // Usa os valores atuais da tabela, ou valores padrão se a tabela ainda não existir
     const pageSize = this.booksTable?.paginator?.pageSize || this.currentPageSize;
-    
-    // Quando pesquisa, volta sempre para a página 1
     const pageIndex = 1;
     
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { 
-        query: query || undefined, // Se query vazia, remove o parâmetro
+        query: query || undefined, 
         page: pageIndex, 
         limit: pageSize 
       },
-      queryParamsHandling: 'merge', // Mantém outros parâmetros da URL
+      queryParamsHandling: 'merge',
     });
   }
-  onDeleteBook(event: DeleteBookEvent) {
+
+  onDeleteBook(book: Book) {
     const dialogRef = this.dialog.open(BookDeleteFormDialogComponent, {
-      data: { bookTitle: event.title }
+      data: { bookTitle: book.title }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
-        this.booksService.deleteBook(event.id).subscribe();
+        this.booksService.deleteBook(book.id).subscribe();
       }
     });
   }
+
   onEditBook(book: Book) {
-    const dialogRef = this.dialog.open(BookFormDialogComponent, {
+    this.dialog.open(BookFormDialogComponent, {
       data: { book },
       width: '600px'
     });
-
   }
 
-  onRequestBook(book: any) {
+  onRequestBook(book: Book) {
     const dialogRef = this.dialog.open(LoanActionDialogComponent, {
-      width: '400px', // Fica elegante num formato um pouco mais estreito
-      data: { book: book } // Passamos o livro que o user clicou
+      width: '400px', 
+      data: { book: book } 
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Se o utilizador confirmou, recarregamos a tabela para atualizar as "Available Copies"
-        const queryParamsSubscription = this.route.queryParams.subscribe(params => {
-        const SearchQuery = params['query'] || '';
-        const page = params['page'] ? Number(params['page']) : 1;
-        const limit = params['limit'] ? Number(params['limit']) : 10;
-        
-        this.currentPageIndex = page;
-        this.currentPageSize = limit;
-        this.searchQuery = SearchQuery;
-        
-        if (SearchQuery) {
-          this.booksService.searchBooks(SearchQuery, page, limit).subscribe();
-        } else {
-          this.loadBooks(page, limit);
-        }
-      });
+        // If confirmed, trigger a quick refresh to update "Available Copies" immediately
+        this.loadBooks(this.currentPageIndex, this.currentPageSize);
       }
     });
   }
-
 }

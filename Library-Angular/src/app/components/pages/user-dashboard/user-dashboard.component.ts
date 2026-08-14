@@ -5,9 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
-import { AuthService } from '../../../services/auth.service';
-import { LoansService } from '../../../services/loans.service';
-import { LoanCardComponent } from '../../loan-card/loan-card.component';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoansService } from '../../../core/services/loans.service';
+import { LoanCardComponent } from '../../shared/loan-card/loan-card.component';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -20,7 +20,7 @@ export class UserDashboardComponent implements OnInit {
   authService = inject(AuthService);
   loansService = inject(LoansService);
   
-  username = computed(() => this.authService.currentUser()?.username || 'Leitor');
+  username = computed(() => this.authService.currentUser()?.username || 'Reader');
 
   wishlist = [
     { title: 'Dune', author: 'Frank Herbert' },
@@ -36,7 +36,7 @@ export class UserDashboardComponent implements OnInit {
     this.loansService.userLoans().filter(loan => loan.status === 'active' || loan.status === 'pending')
   );
 
-  // Calcula estatísticas a partir do signal
+  // Calculate statistics from the signal
   stats = computed(() => {
     const allLoans = this.loansService.userLoans();
     return {
@@ -46,9 +46,9 @@ export class UserDashboardComponent implements OnInit {
     };
   });
 
-  // Função auxiliar para calcular os dias no HTML
+  // Helper function to calculate the days in the template
   calculateDaysLeft(dueDate: string | null): number {
-    if (!dueDate) return 0; // Ex: Se estiver pending, ainda não tem due_date
+    if (!dueDate) return 0; // Example: if it is pending, it does not yet have a due_date
     
     const due = new Date(dueDate);
     const now = new Date();

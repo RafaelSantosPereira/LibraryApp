@@ -24,5 +24,5 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-// Exportamos as duas funções para serem usadas em qualquer rota
+// Export the two functions so they can be used in any route
 module.exports = { authenticateToken, isAdmin };

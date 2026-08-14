@@ -1,0 +1,63 @@
+<mat-toolbar color="primary">
+  
+  <button mat-icon-button (click)="onMenuClick()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  @if (!isSidebarOpen()) {
+    <div class="logo-area" routerLink="/" style="cursor: pointer;">
+      <mat-icon>library_books</mat-icon>
+      <span>BiblioTech</span>
+    </div>
+  }
+
+  
+  <div class="search-block">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput placeholder="Pesquisar..." class="search-input">
+      </mat-form-field>
+  </div>
+
+  <button mat-icon-button (click)="toggleTheme()">
+    <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  <!-- Authentication logic is entirely inside the toolbar -->
+  @if (authService.currentUser()) {
+    
+    <!-- Profile button (only appears when the user is logged in) -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    
+    <!-- User menu -->
+    <mat-menu #userMenu="matMenu">
+      <!-- User name -->
+      <div mat-menu-item disabled>
+        <mat-icon>person</mat-icon>
+        <span style="opacity: 1; color: inherit; font-weight: 500;">
+          {{ authService.currentUser()?.username }}
+        </span>
+      </div>
+      
+      <!-- Divider line -->
+      <hr style="margin: 4px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.1);">
+
+
+      <button mat-menu-item (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>logout</span>
+      </button>
+    </mat-menu>
+
+  } @else {
+    
+    <!-- Login button (shown instead of the profile button when the user is not logged in) -->
+    <button mat-raised-button class="loginBt" (click)="onLogin()">
+      <mat-icon>login</mat-icon>
+      <span>Login</span>
+    </button>
+    
+  }
+</mat-toolbar>

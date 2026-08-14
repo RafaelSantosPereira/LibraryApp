@@ -1,0 +1,105 @@
+.loan-card {
+  position: relative; 
+  padding: 16px; /* Keeps the internal spacing consistent across the whole card */
+  
+  /* Remove Angular Material's native paddings so we can control everything ourselves */
+  mat-card-header, 
+  mat-card-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  ::ng-deep .mat-mdc-card-avatar {
+    margin-left: 0 !important; /* Align the avatar perfectly with the 16px margin */
+  }
+
+  /* Add space on the right of the header so the title does not overlap the button and badge */
+  mat-card-header {
+    padding-right: 120px !important; 
+    margin-bottom: 16px; /* Uniform spacing to the next content */
+  }
+
+  /* --- TOP CONTENT CONTAINER (button + badge) aligned 16px from the right and top edges --- */
+  .top-right-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 2;
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: white;
+      white-space: nowrap;
+      
+      &.pending {
+        background-color: #ff9800;
+      }
+      
+      &.active {
+        background-color: #4caf50;
+      }
+    }
+  }
+
+  .due-date-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .days-left {
+    font-size: 12px;
+    text-align: right;
+    margin-top: 4px;
+    margin-bottom: 0;
+    color: var(--on-surface-de-emphasis, #666);
+    
+    &.urgent {
+      color: #f44336; 
+      font-weight: bold;
+    }
+  }
+
+  .pending-wrapper {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+
+    .admin-actions{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pending-info {
+      color: var(--on-surface-de-emphasis, #666);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+
+      mat-icon {
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+.large-icon {
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+}

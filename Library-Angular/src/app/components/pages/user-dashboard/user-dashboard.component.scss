@@ -10,7 +10,7 @@
   p { color: var(--on-surface-de-emphasis, #666); margin-top: 4px; }
 }
 
-/* Grelha de Estatísticas do topo */
+/* Top statistics grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // each card takes at least 200px, and they expand to fill the space or wrap to the next line if there's not enough space
@@ -41,7 +41,7 @@
 /* Content Principal Dividido em 2 */
 .main-content {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* Empréstimos são 2/3 do ecrã, Wishlist 1/3 */
+  grid-template-columns: 2fr 1fr; /* Loans take 2/3 of the screen, wishlist 1/3 */
   gap: 32px;
   
   @media (max-width: 768px) { // if the screen width is 768px or less (like on mobile devices), change the layout to a single column
@@ -55,7 +55,7 @@ h2 {
   margin-bottom: 16px;
 }
 
-/* Cartões de Empréstimos */
+/* Loan cards */
 .loans-grid {
   display: flex;
   flex-direction: column;

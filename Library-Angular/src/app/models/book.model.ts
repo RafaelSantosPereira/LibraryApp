@@ -1,4 +1,4 @@
-// Interface completa do livro (vem da BD)
+// Complete book interface (from the database)
 export interface Book {
   id: number;
   title: string;
@@ -30,4 +30,9 @@ export interface UpdateBookDto {
   cover_image?: string | null;
   total_copies?: number;
   available_copies?: number;
+}
+
+export interface DeleteBookEvent {
+  id: number;
+  title: string;
 }

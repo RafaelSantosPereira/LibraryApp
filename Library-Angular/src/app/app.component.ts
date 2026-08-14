@@ -1,7 +1,7 @@
 import { Component, Inject, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DOCUMENT } from '@angular/common';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './core/services/auth.service';
 
 
 @Component({

@@ -13,5 +13,9 @@ router.get('/book-loans', authenticateToken, loansController.getbookLoans);
 router.get('/pending', authenticateToken, isAdmin, loansController.getPendingRequests);
 router.put('/:id/approve', authenticateToken, isAdmin, loansController.approveLoan);
 router.put('/:id/return', authenticateToken, isAdmin, loansController.returnBook);
+router.put('/:id/reject', authenticateToken, isAdmin, loansController.rejectLoan);
+router.get('/all', authenticateToken, isAdmin, loansController.getAllLoans);
+router.get('/search', authenticateToken, isAdmin, loansController.searchLoans); // NEW Route
+
 
 module.exports = router;

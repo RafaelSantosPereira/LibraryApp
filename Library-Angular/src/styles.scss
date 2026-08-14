@@ -2,7 +2,7 @@
 
 @include mat.core();
 
-// --- 1. DEFINIÇÃO DOS TEMAS ---
+// --- 1. THEME DEFINITION ---
 $my-theme: mat.define-theme((
   color: (
     theme-type: light,
@@ -26,24 +26,24 @@ $my-dark-theme: mat.define-theme((
   ),
 ));
 
-// --- 2. APLICAÇÃO DO TEMA ---
+// --- 2. THEME APPLICATION ---
 
-// Aplica o tema Light na raiz (html)
+// Apply the light theme at the root (html)
 :root {
   @include mat.all-component-themes($my-theme);
-  // Isto é critico: gera as variáveis de sistema (--mat-sys-*) para o light
+  // This is critical: it generates the system variables (--mat-sys-*) for the light theme
   @include mat.system-level-colors($my-theme);
   @include mat.system-level-typography($my-theme);
 }
 
-// Aplica o tema Dark apenas quando a classe existe
+// Apply the dark theme only when the class exists
 .dark-theme {
   @include mat.all-component-colors($my-dark-theme);
-  // CRUCIAL: Isto redefine as variáveis (--mat-sys-*) para valores escuros
+  // CRITICAL: This overrides the system variables (--mat-sys-*) with dark values
   @include mat.system-level-colors($my-dark-theme);
 }
 
-// --- 3. RESET GLOBAL E BACKGROUND ---
+// --- 3. GLOBAL RESET AND BACKGROUND ---
 
 html, body {
   height: 100%;
@@ -56,14 +56,14 @@ html, body {
   color: var(--mat-sys-on-background);
 }
 
-// --- 4. CORREÇÕES ESPECÍFICAS PARA LOGIN/SIGNUP ---
+// --- 4. LOGIN/SIGNUP SPECIFIC FIXES ---
 
-// Forçar o título do cartão a usar a cor correta do sistema
+// Force the card title to use the correct system color
 mat-card-title, mat-card-subtitle {
   color: var(--mat-sys-on-surface) !important;
 }
 
-// Se o texto dentro dos inputs não estiver a ficar branco:
+// If the text inside the inputs is not turning white:
 .mat-mdc-input-element {
   color: var(--mat-sys-on-surface) !important;
 }

@@ -1,20 +1,20 @@
 import { Routes } from '@angular/router';
-import { MainLayoutComponent } from './components/main-layout/main-layout.component';
+import { MainLayoutComponent } from './components/layout/main-layout/main-layout.component';
 import { LoginPageComponent } from './components/pages/login-page/login-page.component';
 import { SignupPageComponent } from './components/pages/signup-page/signup-page.component';
-import { adminGuard } from './admin.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 
 
 export const routes: Routes = [
-  // 1. Rotas Sem Sidebar/Header
+  // 1. Routes without Sidebar/Header
   { path: 'login', component: LoginPageComponent },
   { path: 'signup', component: SignupPageComponent },
 
-  // 2. Rotas Com Sidebar/Header 
+  // 2. Routes with Sidebar/Header
   {
     path: '',
-    component: MainLayoutComponent, // Este componente tem a sidebar
+    component: MainLayoutComponent, // This component contains the sidebar
     children: [
       {
         path: '',
@@ -23,6 +23,9 @@ export const routes: Routes = [
       { path: 'books', 
         loadComponent: () => import('./components/pages/books-page/books-page.component').then(m => m.BooksPageComponent) 
       },
+      { path: 'manage-loans', 
+        loadComponent: () => import('./components/pages/loans-page/loans-page.component').then(m => m.LoansPageComponent)
+      },
       { path: 'readers', 
         loadComponent: () => import('./components/pages/readers-page/readers-page.component').then(m => m.ReadersPageComponent) ,
         
@@ -30,6 +33,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Rota de fallback
+  // Fallback route
   { path: '**', redirectTo: 'login' }
 ];
