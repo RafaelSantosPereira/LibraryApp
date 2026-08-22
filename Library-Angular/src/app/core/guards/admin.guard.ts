@@ -1,41 +1,35 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, map, of } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const snackBar = inject(MatSnackBar);
+  const authService = inject(AuthService);
 
+  const currentUser = authService.currentUser();
+  if (currentUser) {
+    return allowAdminOrRedirect(currentUser.role === 'admin');
+  }
 
-  const token = localStorage.getItem('auth_token');
-  const userDataString = localStorage.getItem('user_data');
+  return authService.fetchCurrentUser().pipe(
+    map(userResponse => allowAdminOrRedirect(userResponse?.user?.role === 'admin')),
+    catchError(() => of(router.createUrlTree(['/login'])))
+  );
 
-  // 2. Check whether the token and user data are present
-  if (token && userDataString) {
-    try {
-      const user = JSON.parse(userDataString);
-
-      if (user.role === 'admin') {
-        return true; // ALLOW ACCESS
-      }
-    } catch (e) {
-      console.error('Erro ao ler dados do utilizador', e);
+  function allowAdminOrRedirect(isAdmin: boolean) {
+    if (isAdmin) {
+      return true;
     }
+
+    snackBar.open('Acesso Negado: Apenas para Administradores.', 'OK', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      verticalPosition: 'top'
+    });
+
+    return router.createUrlTree([authService.isLoggedIn() ? '/books' : '/login']);
   }
-
-  // 4. If any check above fails:
-  snackBar.open('Acesso Negado: Apenas para Administradores.', 'OK', {
-    duration: 5000,
-    panelClass: ['error-snackbar'],
-    verticalPosition: 'top'
-  });
-
-
-  if (token) {
-    router.navigate(['/books']);
-  } else {
-    router.navigate(['/login']);
-  }
-  
-  return false; // BLOQUEAR ACESSO
 };

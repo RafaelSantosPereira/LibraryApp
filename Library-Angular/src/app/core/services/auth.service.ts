@@ -49,6 +49,7 @@ export class AuthService {
       tap(() => {
         this.currentUser.set(null);
         this.loansService.clearLoans();
+        window.location.reload(); 
       })
     );
   }
@@ -64,9 +65,11 @@ export class AuthService {
       })
     );
   }
+  
   isLoggedIn() {
     return this.currentUser() !== null;
   }
+  
   isAdmin() {
     const user = this.currentUser();
     return user?.role === 'admin';

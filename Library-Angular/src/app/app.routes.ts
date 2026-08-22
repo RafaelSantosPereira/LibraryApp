@@ -24,6 +24,7 @@ export const routes: Routes = [
         loadComponent: () => import('./components/pages/books-page/books-page.component').then(m => m.BooksPageComponent) 
       },
       { path: 'manage-loans', 
+        canActivate: [adminGuard],
         loadComponent: () => import('./components/pages/loans-page/loans-page.component').then(m => m.LoansPageComponent)
       },
       { path: 'readers', 
